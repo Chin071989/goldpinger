@@ -58,22 +58,239 @@ limitations under the License.
         <style type="text/css">
                 body {
                         margin: 0;
-                }
-                #container {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                        color: #1f2a3a;
+                        background-color: #f4f6fa;
+                        -webkit-font-smoothing: antialiased;
                 }
                 #graph-container {
                         position: absolute;
-                        top: 0px;
+                        top: 56px;
                         bottom: 0px;
                         left: 0px;
                         right: 0px;
-                        /*background-color: white;*/
+                        background-color: #f4f6fa;
+                        background-image: radial-gradient(circle at 50% 40%, #ffffff 0%, #f4f6fa 70%);
+                        cursor: grab;
+                }
+                #graph-container:active {
+                        cursor: grabbing;
+                }
+
+                /* navbar */
+                .navbar.gp-navbar {
+                        min-height: 56px;
+                        border: 0;
+                        border-radius: 0;
+                        background-color: #1f2a3a;
+                        background-image: none;
+                        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+                }
+                .gp-navbar .navbar-brand {
+                        height: 56px;
+                        padding: 18px 15px;
+                        font-weight: 600;
+                        letter-spacing: 0.3px;
+                        color: #f5c542;
+                        text-shadow: none;
+                }
+                .gp-navbar .navbar-brand:hover,
+                .gp-navbar .navbar-brand:focus {
+                        color: #ffd866;
+                }
+                .gp-navbar .navbar-nav > li > a {
+                        padding-top: 18px;
+                        padding-bottom: 18px;
+                        color: #c3cbd8;
+                        text-shadow: none;
+                        transition: color 0.15s ease, background-color 0.15s ease;
+                }
+                .gp-navbar .navbar-nav > li > a:hover,
+                .gp-navbar .navbar-nav > li > a:focus {
+                        color: #ffffff;
+                        background-color: rgba(255, 255, 255, 0.06);
+                }
+                .gp-navbar .navbar-nav > .active > a,
+                .gp-navbar .navbar-nav > .active > a:hover,
+                .gp-navbar .navbar-nav > .active > a:focus {
+                        color: #ffffff;
+                        background-color: transparent;
+                        background-image: none;
+                        box-shadow: inset 0 -3px 0 #f5c542;
+                }
+                .gp-navbar .navbar-form {
+                        margin-top: 11px;
+                        margin-bottom: 11px;
+                        border: 0;
+                        box-shadow: none;
+                }
+                .gp-navbar #reload-graph {
+                        background-image: none;
+                        background-color: #2f3d52;
+                        border: 1px solid #3d4d66;
+                        color: #e6ebf2;
+                        text-shadow: none;
+                        box-shadow: none;
+                        border-radius: 4px;
+                        padding: 6px 14px;
+                        transition: background-color 0.15s ease;
+                }
+                .gp-navbar #reload-graph:hover,
+                .gp-navbar #reload-graph:focus {
+                        background-color: #3a4b64;
+                        color: #ffffff;
+                }
+                .gp-navbar .navbar-toggle {
+                        margin-top: 11px;
+                        border-color: #3d4d66;
+                }
+                .gp-navbar .navbar-toggle .icon-bar {
+                        background-color: #c3cbd8;
+                }
+                .gp-navbar .navbar-collapse {
+                        border-color: #2f3d52;
+                }
+                .gp-nav-legend {
+                        float: right;
+                        margin: 0;
+                        padding: 0 15px;
+                        line-height: 56px;
+                        font-size: 12px;
+                        color: #c3cbd8;
+                        list-style: none;
+                }
+                .gp-nav-legend li {
+                        display: inline-block;
+                        margin-left: 12px;
+                }
+                .gp-health-summary {
+                        display: inline-block;
+                        line-height: 1.6;
+                        margin-left: 6px;
+                        padding: 2px 8px;
+                        border-radius: 10px;
+                        background-color: #2f3d52;
+                        color: #e6ebf2;
+                        font-weight: 600;
+                }
+
+                /* legend swatches */
+                .gp-dot {
+                        display: inline-block;
+                        width: 10px;
+                        height: 10px;
+                        margin-right: 5px;
+                        border-radius: 50%;
+                        border: 2px solid transparent;
+                        vertical-align: -1px;
+                }
+                .gp-dot.healthy {
+                        background-color: #2fb380;
+                        border-color: #1e7a57;
+                }
+                .gp-dot.unhealthy {
+                        background-color: #e5533d;
+                        border-color: #a8321f;
+                }
+                .gp-line {
+                        display: inline-block;
+                        width: 22px;
+                        height: 0;
+                        margin-right: 5px;
+                        border-top: 2px solid #9aa9bc;
+                        vertical-align: middle;
+                }
+                .gp-line.ok { border-top-color: #9aa9bc; }
+                .gp-line.failed { border-top-color: #e5533d; }
+                .gp-line.loss { border-top-color: #f0a03c; }
+                .gp-line.dns { border-top: 2px dashed #9aa9bc; }
+
+                /* floating legend over the graph */
+                #graph-legend {
+                        position: fixed;
+                        left: 16px;
+                        bottom: 16px;
+                        z-index: 10;
+                        min-width: 190px;
+                        padding: 10px 14px;
+                        background-color: rgba(255, 255, 255, 0.92);
+                        border: 1px solid #dfe4ec;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+                        font-size: 12px;
+                        line-height: 1.8;
+                        color: #334155;
+                        pointer-events: none;
+                }
+                #graph-legend h6 {
+                        margin: 4px 0 2px 0;
+                        font-size: 10px;
+                        font-weight: 700;
+                        letter-spacing: 0.8px;
+                        text-transform: uppercase;
+                        color: #7b8798;
+                }
+                #graph-legend h6:first-child {
+                        margin-top: 0;
+                }
+                #graph-legend .gp-hint {
+                        margin-top: 4px;
+                        font-size: 11px;
+                        color: #7b8798;
+                }
+
+                /* detail modal */
+                .modal-content {
+                        border: 0;
+                        border-radius: 8px;
+                        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.25);
+                }
+                .modal-header {
+                        border-bottom-color: #e8ecf2;
+                }
+                .modal-title {
+                        font-weight: 600;
+                        word-break: break-all;
+                }
+                .gp-summary {
+                        margin-bottom: 14px;
+                }
+                .gp-summary th {
+                        width: 35%;
+                        color: #5b6678;
+                        font-weight: 600;
+                }
+                .gp-summary td {
+                        font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+                        font-size: 13px;
+                }
+                .gp-summary .label {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                        font-size: 11px;
+                }
+                .label-healthy { background-color: #2fb380; }
+                .label-unhealthy { background-color: #e5533d; }
+                .gp-raw summary {
+                        cursor: pointer;
+                        color: #5b6678;
+                        font-weight: 600;
+                        margin-bottom: 6px;
+                }
+                .gp-raw code {
+                        display: block;
+                        padding: 10px;
+                        max-height: 50vh;
+                        overflow: auto;
+                        color: #1f2a3a;
+                        background-color: #f6f8fb;
+                        border: 1px solid #e8ecf2;
+                        border-radius: 4px;
                 }
         </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top gp-navbar">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -96,6 +313,14 @@ limitations under the License.
           </div>
           <button id="reload-graph" class="btn btn-default">reload</button>
         </div>
+        <ul class="gp-nav-legend hidden-xs hidden-sm hidden-md">
+          <li><span class="gp-dot healthy"></span>healthy</li>
+          <li><span class="gp-dot unhealthy"></span>unhealthy</li>
+          <li><span class="gp-line failed"></span>failed</li>
+          <li><span class="gp-line loss"></span>packet loss</li>
+          <li><span class="gp-line dns"></span>DNS/probe</li>
+          <li><span id="health-summary" class="gp-health-summary" style="display: none;"></span></li>
+        </ul>
         </div>
       </div>
     </nav>
@@ -103,6 +328,17 @@ limitations under the License.
     <div class="container">
 
         <div id="graph-container"></div>
+        <div id="graph-legend">
+                <h6>Nodes</h6>
+                <div><span class="gp-dot healthy"></span>Healthy</div>
+                <div><span class="gp-dot unhealthy"></span>Unhealthy / unreachable</div>
+                <h6>Edges</h6>
+                <div><span class="gp-line ok"></span>Ping OK</div>
+                <div><span class="gp-line failed"></span>Ping failed</div>
+                <div><span class="gp-line loss"></span>UDP packet loss</div>
+                <div><span class="gp-line dns"></span>DNS / probe check</div>
+                <div class="gp-hint">Click a node to isolate its edges<br>Zoom in to see latency labels</div>
+        </div>
 </div>
 
     </div>
@@ -197,6 +433,179 @@ var prepareJSON = function(subject){
                 .text(JSON.stringify(subject, undefined, 4));
 }
 
+var COLORS = {
+        nodeHealthy: "#2fb380",
+        nodeHealthyBorder: "#1e7a57",
+        nodeUnhealthy: "#e5533d",
+        nodeUnhealthyBorder: "#a8321f",
+        edgeOk: "#9aa9bc",
+        edgeOkHover: "#4a5a70",
+        edgeSelf: "#c9d1dc",
+        edgeSelfHover: "#7b8798",
+        edgeFailed: "#e5533d",
+        edgeFailedHover: "#b8321f",
+        edgeLoss: "#f0a03c",
+        edgeLossHover: "#c47a12",
+        edgeDimmed: "#e8ecf2",
+        label: "#1f2a3a"
+};
+
+// circular node with a solid border, using node.borderColor
+sigma.utils.pkg('sigma.canvas.nodes');
+sigma.canvas.nodes.bordered = function(node, context, settings) {
+        var prefix = settings('prefix') || '',
+            size = node[prefix + 'size'],
+            lineWidth = Math.max(1.5, size * 0.22);
+
+        context.beginPath();
+        context.arc(node[prefix + 'x'], node[prefix + 'y'], size, 0, Math.PI * 2, true);
+        context.closePath();
+        context.fillStyle = node.color || settings('defaultNodeColor');
+        context.fill();
+
+        context.beginPath();
+        context.arc(node[prefix + 'x'], node[prefix + 'y'], size - lineWidth / 2, 0, Math.PI * 2, true);
+        context.closePath();
+        context.lineWidth = lineWidth;
+        context.strokeStyle = node.borderColor || settings('defaultNodeBorderColor');
+        context.stroke();
+};
+
+var formatValue = function(value, suffix){
+        if (value === undefined || value === null || value === "") {
+                return "\u2014";
+        }
+        if (typeof value === "number" && !Number.isInteger(value)) {
+                value = value.toFixed(2);
+        }
+        return String(value) + (suffix || "");
+};
+
+var statusLabel = function(ok){
+        if (ok === undefined) {
+                return $("<span class='label label-default'></span>").text("unknown");
+        }
+        return ok
+                ? $("<span class='label label-healthy'></span>").text("OK")
+                : $("<span class='label label-unhealthy'></span>").text("FAILED");
+};
+
+// rows: [[label, value-or-jQuery], ...]
+var prepareSummary = function(rows){
+        var tbody = $("<tbody></tbody>");
+        rows.forEach(function(row){
+                var td = $("<td></td>");
+                if (row[1] instanceof jQuery) {
+                        td.append(row[1]);
+                } else {
+                        td.text(row[1]);
+                }
+                tbody.append($("<tr></tr>").append($("<th></th>").text(row[0])).append(td));
+        });
+        return $("<table class='table table-condensed table-striped gp-summary'></table>").append(tbody);
+};
+
+var prepareRaw = function(subject){
+        return $("<details class='gp-raw'></details>")
+                .append($("<summary></summary>").text("Raw JSON"))
+                .append(prepareJSON(subject));
+};
+
+var average = function(values){
+        if (values.length == 0) {
+                return undefined;
+        }
+        return values.reduce(function(a, b){ return a + b; }, 0) / values.length;
+};
+
+var nodeSummaryRows = function(node){
+        var d = node._data || {};
+        if (node._isProbeTarget) {
+                var probing = 0, failing = 0, times = [];
+                for (let pod in d) {
+                        if (!Array.isArray(d[pod])) continue;
+                        d[pod].forEach(function(r){
+                                probing++;
+                                if ('error' in r) failing++;
+                                if (r['response-time-ms'] > 0) times.push(r['response-time-ms']);
+                        });
+                }
+                return [
+                        ["Target", node.id],
+                        ["OK", statusLabel(d.OK)],
+                        ["Probe results", formatValue(probing)],
+                        ["Failed probes", formatValue(failing)],
+                        ["Avg response-time-ms", formatValue(average(times), " ms")],
+                ];
+        }
+        if (Object.keys(d).length == 0) {
+                return [
+                        ["Pod IP", node.id],
+                        ["OK", statusLabel(undefined)],
+                        ["Note", "Not polled directly; only seen as a ping target"],
+                ];
+        }
+        var peers = 0, healthyPeers = 0, times = [], rtts = [], losses = [], hops = [];
+        var podResults = d.response && d.response.podResults;
+        if (podResults && typeof podResults !== 'string') {
+                for (let target in podResults) {
+                        var r = podResults[target];
+                        peers++;
+                        if (r.OK) healthyPeers++;
+                        if (r['response-time-ms'] > 0) times.push(r['response-time-ms']);
+                        if (r['udp-rtt-ms'] > 0) rtts.push(r['udp-rtt-ms']);
+                        if (r['loss-pct'] !== undefined) losses.push(r['loss-pct']);
+                        if (r['hop-count'] > 0) hops.push(r['hop-count']);
+                }
+        }
+        return [
+                ["Pod IP", d.PodIP || node.id],
+                ["HostIP", formatValue(d.HostIP)],
+                ["OK", statusLabel(d.OK)],
+                ["status-code", formatValue(d['status-code'])],
+                ["Peers reachable", peers ? healthyPeers + " / " + peers : "\u2014"],
+                ["Avg response-time-ms", formatValue(average(times), " ms")],
+                ["Avg udp-rtt-ms", formatValue(average(rtts), " ms")],
+                ["Max loss-pct", formatValue(losses.length ? Math.max.apply(null, losses) : undefined, " %")],
+                ["Max hop-count", formatValue(hops.length ? Math.max.apply(null, hops) : undefined)],
+                ["error", formatValue(d.error)],
+        ];
+};
+
+var edgeSummaryRows = function(edge){
+        var d = edge._data || {};
+        if (d.isprobeResultsNode) {
+                return [
+                        ["Source", edge.source],
+                        ["Target", edge.target],
+                        ["Type", "DNS / probe check"],
+                        ["OK", statusLabel(d.OK)],
+                        ["response-time-ms", formatValue(d.elapsed || undefined, " ms")],
+                ];
+        }
+        return [
+                ["Source", edge.source],
+                ["Target", edge.target],
+                ["HostIP", formatValue(d.HostIP)],
+                ["OK", statusLabel(d.OK)],
+                ["status-code", formatValue(d['status-code'])],
+                ["response-time-ms", formatValue(d['response-time-ms'], " ms")],
+                ["udp-rtt-ms", formatValue(d['udp-rtt-ms'], " ms")],
+                ["loss-pct", formatValue(d['loss-pct'], " %")],
+                ["hop-count", formatValue(d['hop-count'])],
+                ["PingTime", formatValue(d.PingTime)],
+                ["error", formatValue(d.error)],
+        ];
+};
+
+var showDetails = function(title, rows, raw){
+        $('#modal-title').text(title);
+        $('#modal-body').empty()
+                .append(prepareSummary(rows))
+                .append(prepareRaw(raw));
+        $('#modal-window-code').modal('show');
+};
+
 var loadingDialog = function(enable){
         $('#modal-title').text("Loading");
         $('#modal-body').empty().append(prepareJSON({stuff:{will_be_there:true, soon: "Math.random() > 0.5"}}));
@@ -211,6 +620,7 @@ var loadingDialog = function(enable){
 
 var global_data = undefined;
 var s; // the sigma graph
+var layoutTimer; // stops the ForceAtlas2 layout
 
 
 var main = function(timeout){
@@ -323,6 +733,11 @@ var main = function(timeout){
                   } 
                 }
 
+                // header health summary
+                var totalPods = Object.keys(resp || {}).length;
+                var healthyPods = Object.keys(resp || {}).filter(function(k){ return resp[k].OK; }).length;
+                $('#health-summary').text(healthyPods + " / " + totalPods + " healthy").show();
+
                 // build the actual graph
                 s = new sigma({
                         graph: {
@@ -337,19 +752,56 @@ var main = function(timeout){
                                 edgeLabelSize: 'proportional',
                                 minArrowSize: 7,
                                 minNodeSize: 10,
-                                sideMargin: 0.45
+                                sideMargin: 0.45,
+
+                                drawEdges: true,
+                                drawEdgeLabels: true,
+                                edgeLabelThreshold: 1.5,
+                                defaultEdgeLabelSize: 11,
+                                defaultEdgeLabelColor: '#5b6678',
+                                defaultEdgeColor: COLORS.edgeOk,
+                                edgeColor: 'default',
+
+                                font: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                                defaultLabelColor: COLORS.label,
+                                defaultLabelSize: 13,
+                                labelThreshold: 4,
+                                defaultNodeColor: COLORS.nodeHealthy,
+                                defaultNodeBorderColor: '#ffffff',
+
+                                enableHovering: true,
+                                enableEdgeHovering: true,
+                                edgeHoverPrecision: 6,
+                                edgeHoverColor: 'edge',
+                                defaultEdgeHoverColor: COLORS.edgeOkHover,
+                                edgeHoverSizeRatio: 2,
+                                edgeHoverExtremities: true,
+                                borderSize: 3,
+                                hoverFontStyle: 'bold',
+                                defaultHoverLabelBGColor: '#ffffff',
+                                defaultLabelHoverColor: COLORS.label,
+                                labelHoverShadow: 'default',
+                                labelHoverShadowColor: 'rgba(15, 23, 42, 0.35)'
                         }
                 });
+
+                var styleNode = function(node){
+                        node.size = 10;
+                        node.type = 'bordered';
+                        if (node._data.OK) {
+                                node.color = COLORS.nodeHealthy;
+                                node.borderColor = COLORS.nodeHealthyBorder;
+                        } else {
+                                node.color = COLORS.nodeUnhealthy;
+                                node.borderColor = COLORS.nodeUnhealthyBorder;
+                        }
+                };
 
                 // generate the nodes on the graph
                 nodes.forEach(function(node, i, a){
                         node.x = Math.cos(Math.PI * 2 * i / a.length);
                         node.y = Math.sin(Math.PI * 2 * i / a.length);
-                        node.size = 10;
-                        node.color = "#4CC40B";
-                        if (!node._data.OK) {
-                                node.color = "red";
-                        }
+                        styleNode(node);
                         //console.log(node);
                         s.graph.addNode(node);
                 });
@@ -358,27 +810,28 @@ var main = function(timeout){
                 probeResultsNodes.forEach(function(node, i, a){
                         node.x = 2;
                         node.y = (0.6 * i / a.length) - 0.8;
-                        node.size = 10;
-                        node.color = "#4CC40B";
-                        if (!node._data.OK) {
-                                node.color = "red";
-                        }
+                        node._isProbeTarget = true;
+                        styleNode(node);
                         s.graph.addNode(node);
                 });
 
                 // generate the edges
                 edges.forEach(function(edge, i){
-                        var color = "#ccc";
+                        var color = COLORS.edgeOk;
+                        var hoverColor = COLORS.edgeOkHover;
                         var type = "curvedArrow";
                         if (edge.source == edge.target){
-                                color = "gray";
+                                color = COLORS.edgeSelf;
+                                hoverColor = COLORS.edgeSelfHover;
                                 type = "curve";
                         }
                         if (!edge._data.OK) {
-                                color = "red";
+                                color = COLORS.edgeFailed;
+                                hoverColor = COLORS.edgeFailedHover;
                         }
                         if (edge._data.OK && edge._data["loss-pct"] > 0) {
-                                color = "#f0ad4e";
+                                color = COLORS.edgeLoss;
+                                hoverColor = COLORS.edgeLossHover;
                         }
                         if ("isprobeResultsNode" in edge._data) {
                                 type = "dashed";
@@ -389,7 +842,7 @@ var main = function(timeout){
                         } else if (edge._data["response-time-ms"]) {
                                 label = edge._data["response-time-ms"] + "ms";
                         } else if (edge._data.elapsed) {
-                                label = edge._data.elapsed;
+                                label = edge._data.elapsed + "ms";
                         }
                         if (edge._data["loss-pct"] > 0) {
                                 label += " " + edge._data["loss-pct"].toFixed(1) + "% loss";
@@ -403,8 +856,10 @@ var main = function(timeout){
                                 target: edge.target,
                                 type: type,
                                 color: color,
+                                hover_color: hoverColor,
                                 label: label,
-                                size: 7
+                                size: 7,
+                                _data: edge._data
                         }
                         //console.log(edge);
                         s.graph.addEdge(edge)
@@ -415,40 +870,66 @@ var main = function(timeout){
 
                 s.refresh();
 
+                // spread the nodes out from the initial circle, then settle
+                var layoutInstance = s;
+                layoutInstance.startForceAtlas2({
+                        worker: true,
+                        barnesHutOptimize: false,
+                        gravity: 1,
+                        scalingRatio: 4,
+                        slowDown: 5,
+                        edgeWeightInfluence: 0,
+                        startingIterations: 10,
+                        iterationsPerRender: 10
+                });
+                clearTimeout(layoutTimer);
+                layoutTimer = setTimeout(function(){
+                        if (layoutInstance.isForceAtlas2Running()) {
+                                layoutInstance.stopForceAtlas2();
+                        }
+                }, 2000);
+
                 var hideNotTouching = function(dst){
                         s.graph.edges().forEach(function(edge){
                                 if (dst == undefined) {
                                         // revert everything to the original state
                                         if (edge._color){
                                                 edge.color = edge._color;
+                                                edge.hover_color = edge._hover_color;
                                                 delete edge._color;
+                                                delete edge._hover_color;
                                         }
                                 } else if (edge.source != dst){
                                         // hide
                                         if (!edge._color){
                                                 edge._color = edge.color;
+                                                edge._hover_color = edge.hover_color;
                                         }
-                                        edge.color = "#faf8f6";
+                                        edge.color = COLORS.edgeDimmed;
+                                        edge.hover_color = COLORS.edgeDimmed;
                                 } else {
                                         // show
                                         if (edge._color) {
                                                 edge.color = edge._color;
+                                                edge.hover_color = edge._hover_color;
                                         }
                                 }
                         });
                         s.refresh();
                 }
 
+                var container = $('#graph-container');
+                s.bind("overNode overEdge", function (e) {
+                        container.css('cursor', 'pointer');
+                });
+                s.bind("outNode outEdge", function (e) {
+                        container.css('cursor', '');
+                });
+
                 s.bind("clickNode", function (e) {
                         var node = e.data.node;
                         hideNotTouching(node.id);
-
-                        // fill the voids
-                        $('#modal-title').text(node.id);
-                        $('#modal-body').empty().append(prepareJSON(node._data));
-
-                        // show the things
-                        $('#modal-window-code').modal('show');
+                        showDetails(node.label || node.id, nodeSummaryRows(node), node._data);
                 });
                 s.bind("clickStage", function (e) {
                         hideNotTouching();
@@ -456,15 +937,8 @@ var main = function(timeout){
 
                 s.bind("clickEdge", function (e) {
                         var edge = e.data.edge;
-
                         console.log(edge);
-
-                        // fill the voids
-                        $('#modal-title').text(edge.id);
-                        $('#modal-body').empty().append(prepareJSON(edge._data));
-
-                        // show the things
-                        $('#modal-window-code').modal('show');
+                        showDetails(edge.source + " \u2192 " + edge.target, edgeSummaryRows(edge), edge._data);
                 });
         })
         .catch(function(err){
@@ -486,7 +960,13 @@ $("#show-data").click(function (e) {
         $('#modal-window-code').modal('show');
 });
 $("#reload-graph").click(function (e) {
-        s.kill();
+        if (s) {
+                clearTimeout(layoutTimer);
+                s.killForceAtlas2();
+                s.kill();
+                s = undefined;
+        }
+        $('#graph-container').css('cursor', '');
         main();
 });
 $("#show-heatmap").click(function (e) {
