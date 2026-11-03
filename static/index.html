@@ -580,7 +580,8 @@ var edgeSummaryRows = function(edge){
                         ["Target", edge.target],
                         ["Type", "DNS / probe check"],
                         ["OK", statusLabel(d.OK)],
-                        ["response-time-ms", formatValue(d.elapsed || undefined, " ms")],
+                        // response-time-ms is omitempty, so a missing value on a successful probe means < 1 ms
+                        ["response-time-ms", formatValue(d.OK ? d.elapsed : (d.elapsed || undefined), " ms")],
                 ];
         }
         return [
